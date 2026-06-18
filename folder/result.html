@@ -103,21 +103,34 @@
             margin-bottom: 1rem;
         }
 
+        .table-scroll {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
         .checklist-table {
             width: 100%;
+            min-width: 760px;
             border-collapse: collapse;
             margin-top: 1rem;
             border: 2px solid var(--text-main);
         }
         .checklist-table th, .checklist-table td {
             border: 1px solid var(--text-main);
-            padding: 0.75rem;
+            padding: 0.65rem;
             text-align: left;
-            font-size: 0.9rem;
-            vertical-align: middle;
+            font-size: 0.82rem;
+            vertical-align: top;
+            white-space: pre-line;
         }
-        .checklist-table th { background-color: #f1f5f9; font-weight: 700; text-align: center; }
-        .checklist-table .check-col { width: 60px; text-align: center; }
+        .checklist-table th { background-color: #f1f5f9; font-weight: 700; text-align: center; vertical-align: middle; }
+        .checklist-table .training-col { width: 27%; }
+        .checklist-table .requirement-col { width: 92px; text-align: center; }
+        .checklist-table .frequency-col { width: 140px; }
+        .checklist-table .date-col { width: 90px; }
+        .checklist-table .check-col { width: 58px; text-align: center; vertical-align: middle; }
+        .checklist-table .note-col { min-width: 180px; }
         
         .checkbox-square {
             display: inline-block;
@@ -228,17 +241,22 @@
                 ※国が定める法定研修です。指定権者（自治体）により追加研修がある場合があります。必ず条例をご確認ください。
             </p>
 
-            <table class="checklist-table">
-                <thead>
-                    <tr>
-                        <th>研修プログラム内容</th>
-                        <th style="width: 100px;">実施日</th>
-                        <th class="check-col">確認</th>
-                    </tr>
-                </thead>
-                <tbody id="checklist-body">
-                    </tbody>
-            </table>
+            <div class="table-scroll">
+                <table class="checklist-table">
+                    <thead>
+                        <tr>
+                            <th class="training-col">研修名</th>
+                            <th class="requirement-col">対象区分</th>
+                            <th class="frequency-col">実施頻度</th>
+                            <th class="note-col">備考</th>
+                            <th class="date-col">実施日</th>
+                            <th class="check-col">確認</th>
+                        </tr>
+                    </thead>
+                    <tbody id="checklist-body">
+                        </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="action-area" id="action-area" style="text-align: center; margin-top: 2rem;">
@@ -263,32 +281,1093 @@
     </div>
 
     <script>
-        const ALL_TYPES = [
-            "訪問介護", "訪問入浴", "訪問看護", "訪問リハビリ",
-            "通所介護", "通所リハビリ", "短期入所", "居宅介護支援", "福祉用具貸与",
-            "小規模多機能", "認知症GH", "特定施設入居者生活",
-            "介護老人福祉施設", "介護老人保健施設", "介護医療院"
-        ];
+        const SERVICE_DISPLAY_LABELS = {
+        "訪問入浴": "訪問入浴介護",
+        "特定施設入居者生活": "特定施設入居者生活介護"
+};
 
-        const TRAINING_DATA = [
-            { name: "① 認知症、認知症ケアに関する研修", targets: "ALL" },
-            { name: "② プライバシー保護に関する研修", targets: "ALL" },
-            { name: "③ 接遇に関する研修", targets: ["訪問介護", "訪問入浴", "通所介護", "通所リハビリ", "短期入所"] },
-            { name: "④ 倫理・法令遵守に関する研修", targets: "ALL" },
-            { name: "⑤ 事故の発生、予防、再発防止に関する研修", targets: ALL_TYPES.filter(t => t !== "居宅介護支援") },
-            { name: "⑥ 緊急時の対応に関する研修", targets: ALL_TYPES.filter(t => t !== "居宅介護支援") },
-            { name: "⑦ 感染症及び食中毒の発生及び蔓延防止に関する研修", targets: "ALL" },
-            { name: "⑧ 身体拘束の排除の取り組みに関する研修", targets: ["通所介護", "通所リハビリ", "小規模多機能", "短期入所", "認知症GH", "特定施設入居者生活", "介護老人福祉施設", "介護老人保健施設", "介護医療院"] },
-            { name: "⑨ 非常災害時の対応に関する研修", targets: ALL_TYPES.filter(t => !["訪問介護", "訪問入浴", "訪問看護", "訪問リハビリ"].includes(t)) },
-            { name: "⑩ 介護予防及び要介護の進行予防に関する研修", targets: ["特定施設入居者生活"] },
-            { name: "⑪ 医療に関する研修", targets: ["介護老人福祉施設"] },
-            { name: "⑫ ターミナルケア（終末医療）に関する研修", targets: ["認知症GH", "特定施設入居者生活", "介護老人福祉施設", "介護老人保健施設", "介護医療院"] },
-            { name: "⑬ 精神的ケアに関する研修", targets: ["介護老人福祉施設"] },
-            { name: "⑭ 業務継続計画（BCP）", targets: "ALL" },
-            { name: "⑮ ハラスメント対策・対応", targets: "ALL" },
-            { name: "⑯ 高齢者虐待防止、関連法含む虐待防止に関する研修", targets: "ALL" },
-            { name: "⑰ 認知症介護基礎研修", targets: ["訪問入浴", "通所介護", "小規模多機能", "短期入所", "認知症GH", "特定施設入居者生活", "介護老人福祉施設", "介護老人保健施設", "介護医療院"] }
-        ];
+        const TRAINING_MATRIX = {
+        "訪問入浴": [
+                {
+                        "name": "認知症介護基礎研修",
+                        "frequency": "新規採用から\n1年以内",
+                        "note": "無資格職員は必須\n（2024年4月完全義務化）",
+                        "requirement": "○"
+                },
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上\n望ましい",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○\n望ましい"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○\n望ましい"
+                },
+                {
+                        "name": "接遇・マナー",
+                        "frequency": "年1回以上",
+                        "note": "訪問系サービスで特に重要",
+                        "requirement": "○\n望ましい"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○\n望ましい"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年1回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○\n回数の義務なし"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○\n望ましい"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年1回以上",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "研修：年1回以上\n訓練：年1回以上",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○\n望ましい"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "通所介護": [
+                {
+                        "name": "認知症介護基礎研修",
+                        "frequency": "新規採用から\n1年以内",
+                        "note": "無資格職員は必須\n（2024年4月完全義務化）",
+                        "requirement": "○"
+                },
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上\n望ましい",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "接遇・マナー",
+                        "frequency": "年1回以上",
+                        "note": "訪問系サービスで特に重要",
+                        "requirement": "△"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年1回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年1回以上",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "身体拘束排除\n適正化",
+                        "frequency": "年2回以上（通所系は年1回以上）",
+                        "note": "身体拘束適正化委員会と連動",
+                        "requirement": "○"
+                },
+                {
+                        "name": "非常災害時の対応",
+                        "frequency": "年1回以上",
+                        "note": "災害BCP含む\n避難訓練と兼ねる可\n消防法確認要",
+                        "requirement": "○"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "研修：年1回以上\n訓練：年1回以上",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "小規模多機能": [
+                {
+                        "name": "認知症介護基礎研修",
+                        "frequency": "新規採用から\n1年以内",
+                        "note": "無資格職員は必須\n（2024年4月完全義務化）",
+                        "requirement": "○"
+                },
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上\n望ましい",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年1回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年1回以上",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "身体拘束排除\n適正化",
+                        "frequency": "年2回以上（通所系は年1回以上）",
+                        "note": "身体拘束適正化委員会と連動",
+                        "requirement": "○"
+                },
+                {
+                        "name": "非常災害時の対応",
+                        "frequency": "年1回以上",
+                        "note": "災害BCP含む\n避難訓練と兼ねる可\n消防法確認要",
+                        "requirement": "○"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "研修：年1回以上\n訓練：年1回以上",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "短期入所": [
+                {
+                        "name": "認知症介護基礎研修",
+                        "frequency": "新規採用から\n1年以内",
+                        "note": "無資格職員は必須\n（2024年4月完全義務化）",
+                        "requirement": "○"
+                },
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上\n望ましい",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "接遇・マナー",
+                        "frequency": "年1回以上",
+                        "note": "訪問系サービスで特に重要",
+                        "requirement": "△"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年1回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年1回以上",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "身体拘束排除\n適正化",
+                        "frequency": "年2回以上（通所系は年1回以上）",
+                        "note": "身体拘束適正化委員会と連動",
+                        "requirement": "○"
+                },
+                {
+                        "name": "非常災害時の対応",
+                        "frequency": "年1回以上",
+                        "note": "災害BCP含む\n避難訓練と兼ねる可\n消防法確認要",
+                        "requirement": "○"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "研修：年1回以上\n訓練：年1回以上",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "訪問介護": [
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上\n望ましい",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○\n望ましい"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○\n望ましい"
+                },
+                {
+                        "name": "接遇・マナー",
+                        "frequency": "年1回以上",
+                        "note": "訪問系サービスで特に重要",
+                        "requirement": "○\n望ましい"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○\n望ましい"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年1回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○\n回数の義務なし"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○\n望ましい"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年1回以上",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "研修：年1回以上\n訓練：年1回以上",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○\n望ましい"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "訪問看護": [
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上\n望ましい",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年1回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○\n回数の義務なし"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年1回以上",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "研修：年1回以上\n訓練：年1回以上",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "訪問リハビリ": [
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上\n望ましい",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年1回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○\n回数の義務なし"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年1回以上",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "研修：年1回以上\n訓練：年1回以上",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "通所リハビリ": [
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上\n望ましい",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "接遇・マナー",
+                        "frequency": "年1回以上",
+                        "note": "訪問系サービスで特に重要",
+                        "requirement": "△"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年1回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年1回以上",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "身体拘束排除\n適正化",
+                        "frequency": "年2回以上（通所系は年1回以上）",
+                        "note": "身体拘束適正化委員会と連動",
+                        "requirement": "○"
+                },
+                {
+                        "name": "非常災害時の対応",
+                        "frequency": "年1回以上",
+                        "note": "災害BCP含む\n避難訓練と兼ねる可\n消防法確認要",
+                        "requirement": "○"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "研修：年1回以上\n訓練：年1回以上",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "居宅介護支援": [
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上\n望ましい",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年1回以上",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "非常災害時の対応",
+                        "frequency": "年1回以上",
+                        "note": "災害BCP含む\n避難訓練と兼ねる可\n消防法確認要",
+                        "requirement": "△"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "研修：年1回以上\n訓練：年1回以上",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "福祉用具貸与": [
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上\n望ましい",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年1回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○\n回数の義務なし"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年1回以上",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "非常災害時の対応",
+                        "frequency": "年1回以上",
+                        "note": "災害BCP含む\n避難訓練と兼ねる可\n消防法確認要",
+                        "requirement": "△"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "研修：年1回以上\n訓練：年1回以上",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "認知症GH": [
+                {
+                        "name": "認知症介護基礎研修",
+                        "frequency": "新規採用から\n1年以内",
+                        "note": "無資格職員は必須\n（2024年4月完全義務化）",
+                        "requirement": "○"
+                },
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年２回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年2回以上\n（施設系）",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "身体拘束排除\n適正化",
+                        "frequency": "年2回以上\n（施設系）",
+                        "note": "身体拘束適正化委員会と連動",
+                        "requirement": "○"
+                },
+                {
+                        "name": "非常災害時の対応",
+                        "frequency": "年２回以上",
+                        "note": "災害BCP含む\n避難訓練と兼ねる可\n消防法確認要",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ターミナルケア\n（終末期医療）",
+                        "frequency": "看取り加算算定時",
+                        "note": "看取り介護加算の算定要件",
+                        "requirement": "△"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "年2回以上\n訓練要",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "特定施設入居者生活": [
+                {
+                        "name": "認知症介護基礎研修",
+                        "frequency": "新規採用から\n1年以内",
+                        "note": "無資格職員は必須\n（2024年4月完全義務化）",
+                        "requirement": "○"
+                },
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年２回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年2回以上\n（施設系）",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "身体拘束排除\n適正化",
+                        "frequency": "年2回以上\n（施設系）",
+                        "note": "身体拘束適正化委員会と連動",
+                        "requirement": "○"
+                },
+                {
+                        "name": "非常災害時の対応",
+                        "frequency": "年２回以上",
+                        "note": "災害BCP含む\n避難訓練と兼ねる可\n消防法確認要",
+                        "requirement": "○"
+                },
+                {
+                        "name": "介護予防及び要介護状態の進行予防",
+                        "frequency": "年1回以上",
+                        "note": "特定施設入居者生活介護のみ",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ターミナルケア\n（終末期医療）",
+                        "frequency": "看取り加算算定時",
+                        "note": "看取り介護加算の算定要件",
+                        "requirement": "△"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "年2回以上\n訓練要",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "介護老人福祉施設": [
+                {
+                        "name": "認知症介護基礎研修",
+                        "frequency": "新規採用から\n1年以内",
+                        "note": "無資格職員は必須\n（2024年4月完全義務化）",
+                        "requirement": "○"
+                },
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年２回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年2回以上\n（施設系）",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "身体拘束排除\n適正化",
+                        "frequency": "年2回以上\n（施設系）",
+                        "note": "身体拘束適正化委員会と連動",
+                        "requirement": "○"
+                },
+                {
+                        "name": "非常災害時の対応",
+                        "frequency": "年２回以上",
+                        "note": "災害BCP含む\n避難訓練と兼ねる可\n消防法確認要",
+                        "requirement": "○"
+                },
+                {
+                        "name": "医療",
+                        "frequency": "年1回以上（推奨）",
+                        "note": "特養で推奨",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ターミナルケア\n（終末期医療）",
+                        "frequency": "看取り加算算定時",
+                        "note": "看取り介護加算の算定要件",
+                        "requirement": "△"
+                },
+                {
+                        "name": "精神的ケア",
+                        "frequency": "年1回以上",
+                        "note": "介護老人福祉施設の運営基準",
+                        "requirement": "○"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "年2回以上\n訓練要",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "介護老人保健施設": [
+                {
+                        "name": "認知症介護基礎研修",
+                        "frequency": "新規採用から\n1年以内",
+                        "note": "無資格職員は必須\n（2024年4月完全義務化）",
+                        "requirement": "○"
+                },
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年２回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年2回以上\n（施設系）",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "身体拘束排除\n適正化",
+                        "frequency": "年2回以上\n（施設系）",
+                        "note": "身体拘束適正化委員会と連動",
+                        "requirement": "○"
+                },
+                {
+                        "name": "非常災害時の対応",
+                        "frequency": "年２回以上",
+                        "note": "災害BCP含む\n避難訓練と兼ねる可\n消防法確認要",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ターミナルケア\n（終末期医療）",
+                        "frequency": "看取り加算算定時",
+                        "note": "看取り介護加算の算定要件",
+                        "requirement": "△"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "年2回以上\n訓練要",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ],
+        "介護医療院": [
+                {
+                        "name": "認知症介護基礎研修",
+                        "frequency": "新規採用から\n1年以内",
+                        "note": "無資格職員は必須\n（2024年4月完全義務化）",
+                        "requirement": "○"
+                },
+                {
+                        "name": "認知症・認知症ケア",
+                        "frequency": "年1回以上",
+                        "note": "認知症介護基礎研修を含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "プライバシー保護\n個人情報保護",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "倫理・法令遵守\nコンプライアンス",
+                        "frequency": "年1回以上",
+                        "note": "-",
+                        "requirement": "○"
+                },
+                {
+                        "name": "事故の発生・予防\n再発防止",
+                        "frequency": "年２回以上",
+                        "note": "安全管理体制の一環",
+                        "requirement": "○"
+                },
+                {
+                        "name": "緊急時の対応",
+                        "frequency": "年1回以上",
+                        "note": "AED、誤嚥対応等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "感染症及び食中毒の発生予防・蔓延防止",
+                        "frequency": "年2回以上\n（施設系）",
+                        "note": "感染症BCP含む",
+                        "requirement": "○"
+                },
+                {
+                        "name": "身体拘束排除\n適正化",
+                        "frequency": "年2回以上\n（施設系）",
+                        "note": "身体拘束適正化委員会と連動",
+                        "requirement": "○"
+                },
+                {
+                        "name": "非常災害時の対応",
+                        "frequency": "年２回以上",
+                        "note": "災害BCP含む\n避難訓練と兼ねる可\n消防法確認要",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ターミナルケア\n（終末期医療）",
+                        "frequency": "看取り加算算定時",
+                        "note": "看取り介護加算の算定要件",
+                        "requirement": "△"
+                },
+                {
+                        "name": "業務継続計画（BCP）",
+                        "frequency": "年2回以上\n訓練要",
+                        "note": "2024年4月完全義務化\n災害BCP＋感染症BCP\n未実施は減算対象",
+                        "requirement": "○"
+                },
+                {
+                        "name": "ハラスメント\n対策・対応",
+                        "frequency": "年1回以上",
+                        "note": "2021年度より義務化\nカスハラ・パワハラ等",
+                        "requirement": "○"
+                },
+                {
+                        "name": "高齢者虐待防止",
+                        "frequency": "年1回以上",
+                        "note": "2024年4月完全義務化\n未実施は減算対象（基本報酬の1%）",
+                        "requirement": "○"
+                }
+        ]
+};
 
         function decodeSafeBase64(encodedStr) {
             try {
@@ -333,32 +1412,52 @@
             renderResult(data);
         });
 
+        function appendCell(row, text, className) {
+            const cell = document.createElement('td');
+            if (className) cell.className = className;
+            cell.textContent = text || '';
+            row.appendChild(cell);
+        }
+
         function renderResult(data) {
+            const businessType = data.businessType || '';
+            const displayType = SERVICE_DISPLAY_LABELS[businessType] || businessType || '未選択';
+
             document.getElementById('out-facility').innerText = data.facilityName || '未入力';
             document.getElementById('out-rep').innerText = data.repName || '未入力';
-            document.getElementById('out-type').innerText = data.businessType || '未選択';
+            document.getElementById('out-type').innerText = displayType;
             document.getElementById('out-date').innerText = data.date || new Date().toLocaleDateString('ja-JP');
 
             const tbody = document.getElementById('checklist-body');
             tbody.innerHTML = '';
-            
-            TRAINING_DATA.forEach(item => {
-                let isTarget = false;
-                if (item.targets === "ALL") {
-                    isTarget = true;
-                } else if (Array.isArray(item.targets) && item.targets.includes(data.businessType)) {
-                    isTarget = true;
-                }
 
-                if (isTarget) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${item.name}</td>
-                        <td></td>
-                        <td class="check-col"><span class="checkbox-square"></span></td>
-                    `;
-                    tbody.appendChild(tr);
-                }
+            const trainings = TRAINING_MATRIX[businessType] || [];
+            if (trainings.length === 0) {
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = 6;
+                td.textContent = '該当する研修データが見つかりません。入力画面から事業形態を選び直してください。';
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+                return;
+            }
+
+            trainings.forEach(item => {
+                const tr = document.createElement('tr');
+                appendCell(tr, item.name, 'training-col');
+                appendCell(tr, item.requirement, 'requirement-col');
+                appendCell(tr, item.frequency, 'frequency-col');
+                appendCell(tr, item.note === '-' ? '' : item.note, 'note-col');
+                appendCell(tr, '', 'date-col');
+
+                const checkCell = document.createElement('td');
+                checkCell.className = 'check-col';
+                const checkbox = document.createElement('span');
+                checkbox.className = 'checkbox-square';
+                checkCell.appendChild(checkbox);
+                tr.appendChild(checkCell);
+
+                tbody.appendChild(tr);
             });
         }
     </script>
