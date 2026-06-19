@@ -127,7 +127,6 @@
         .checklist-table th { background-color: #f1f5f9; font-weight: 700; text-align: center; vertical-align: middle; }
         .checklist-table .training-col { width: 27%; }
         .checklist-table .requirement-col { width: 92px; text-align: center; }
-        .checklist-table .frequency-col { width: 140px; }
         .checklist-table .date-col { width: 90px; }
         .checklist-table .check-col { width: 58px; text-align: center; vertical-align: middle; }
         .checklist-table .note-col { min-width: 180px; }
@@ -247,7 +246,6 @@
                         <tr>
                             <th class="training-col">研修名</th>
                             <th class="requirement-col">対象区分</th>
-                            <th class="frequency-col">実施頻度</th>
                             <th class="note-col">備考</th>
                             <th class="date-col">実施日</th>
                             <th class="check-col">確認</th>
@@ -1435,7 +1433,7 @@
             if (trainings.length === 0) {
                 const tr = document.createElement('tr');
                 const td = document.createElement('td');
-                td.colSpan = 6;
+                td.colSpan = 5;
                 td.textContent = '該当する研修データが見つかりません。入力画面から事業形態を選び直してください。';
                 tr.appendChild(td);
                 tbody.appendChild(tr);
@@ -1446,7 +1444,6 @@
                 const tr = document.createElement('tr');
                 appendCell(tr, item.name, 'training-col');
                 appendCell(tr, item.requirement, 'requirement-col');
-                appendCell(tr, item.frequency, 'frequency-col');
                 appendCell(tr, item.note === '-' ? '' : item.note, 'note-col');
                 appendCell(tr, '', 'date-col');
 
