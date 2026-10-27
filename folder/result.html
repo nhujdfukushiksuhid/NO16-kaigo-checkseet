@@ -1382,6 +1382,11 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // オートビズから旧GitHub URLへ戻っても、入力元で結果を復元する。
+            if (window.location.hostname === 'nhujdfukushiksuhid.github.io') {
+                window.location.replace('https://check.apdream515.com/result.html');
+                return;
+            }
             // 以下、通常のデータ読み込みロジック
             let data = null;
             const urlParams = new URLSearchParams(window.location.search);
