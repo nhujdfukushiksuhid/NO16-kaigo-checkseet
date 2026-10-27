@@ -76,14 +76,18 @@
 
         .header-right-ad {
             width: 200px;
-            background-color: #fff1f2; 
+            background-color: #fff1f2;
             border: 2px solid var(--danger);
             padding: 0.75rem;
             text-align: center;
             border-radius: var(--radius-md);
             flex-shrink: 0;
-            margin: 0 auto; 
+            margin: 0 auto;
+            color: inherit;
+            text-decoration: none;
         }
+
+        .header-right-ad:hover { background-color: #ffe4e6; }
 
         .ad-title { font-size: 0.7rem; color: var(--danger); font-weight: 800; margin-bottom: 0.5rem; line-height: 1.3; }
         .qr-placeholder {
@@ -93,6 +97,42 @@
             display: flex; align-items: center; justify-content: center;
         }
         .ad-sub { font-size: 0.65rem; font-weight: 700; color: var(--text-main); }
+
+        .consultation-cta {
+            max-width: 620px;
+            margin: 0 auto 1.5rem;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            border: 1px solid #fed7aa;
+            text-align: center;
+        }
+        .consultation-cta h2 {
+            margin: 0 0 0.5rem;
+            color: #9a3412;
+            font-size: 1.25rem;
+        }
+        .consultation-cta p {
+            margin: 0 0 1rem;
+            color: var(--text-main);
+            font-size: 0.9rem;
+        }
+        .consultation-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 380px;
+            min-height: 52px;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            background: var(--primary);
+            color: white;
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow: var(--shadow-md);
+        }
+        .consultation-button:hover { background: var(--primary-hover); }
 
         .intro-message {
             background: var(--background);
@@ -226,13 +266,13 @@
                     <div class="info-row"><span class="info-label">作成日</span> <span class="info-value" id="out-date">読込中...</span></div>
                 </div>
                 
-                <div class="header-right-ad">
+                <a class="header-right-ad" href="https://apdream515.jp/contact.html?source=lp&amp;type=other" target="_blank" rel="noopener noreferrer" aria-label="無料相談フォームを開く">
                     <div class="ad-title">▼ 研修・加算の無料相談 ▼</div>
                     <div class="qr-placeholder">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://example.com" alt="QR" style="width:100%; height:100%;">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&amp;data=https%3A%2F%2Fapdream515.jp%2Fcontact.html%3Fsource%3Dlp%26type%3Dother" alt="無料相談フォームを開くQRコード" style="width:100%; height:100%;">
                     </div>
-                    <div class="ad-sub">スマホでお問い合わせ</div>
-                </div>
+                    <div class="ad-sub">スマホで相談する</div>
+                </a>
             </div>
 
             <p class="intro-message">貴事業所が実施しなければならない法定研修一覧</p>
@@ -258,7 +298,12 @@
         </div>
 
         <div class="action-area" id="action-area" style="text-align: center; margin-top: 2rem;">
-            
+            <section class="consultation-cta" aria-labelledby="consultation-heading">
+                <h2 id="consultation-heading">診断結果について無料で相談できます</h2>
+                <p>診断結果について気になることを、お気軽にご相談ください。</p>
+                <a class="consultation-button" href="https://apdream515.jp/contact.html?source=lp&amp;type=other">まずは相談する&nbsp; →</a>
+            </section>
+
             <div class="iab-guide-container">
                 <div class="iab-icon-circle">🔒</div>
                 <div class="iab-title">PDFファイルを保存するには</div>
